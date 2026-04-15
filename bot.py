@@ -43,31 +43,50 @@ async def on_message(message):
     # ✅ NOTION ROUTING FIRST
     # ----------------------------
     if user_input.startswith("!note save"):
-        text = user_input.replace("!note save", "").strip()
+        payload = user_input[len("!note save"):].strip()
+        use_ai = False
+
+        if payload.lower().startswith("ai "):
+            use_ai = True
+            text = payload[3:].strip()
+        elif payload.lower() == "ai":
+            text = ""
+            use_ai = True
+        else:
+            text = payload
 
         if not text:
-            await message.channel.send("❌ Please provide text to save.")
+            await message.channel.send(
+                "❌ Please provide text to save. Use '!note save <text>' or '!note save ai <text>'."
+            )
             return
 
-        thinking_msg = await message.channel.send("🤔 Processing note...")
+        if use_ai:
+            thinking_msg = await message.channel.send("🤔 Processing note with AI...")
 
-        try:
-            prompt = (
-                "Rewrite this as one concise plain-text note line. "
-                "Do not use bullets, numbering, markdown, or line breaks. "
-                "Keep original meaning and avoid adding facts.\n\n"
-                f"User note: {text}"
-            )
-            response = llm.invoke(prompt)
-            refined_text = (response.content or "").strip()
+            try:
+                prompt = (
+                    "Rewrite this as one concise plain-text note line. "
+                    "Do not use bullets, numbering, markdown, or line breaks. "
+                    "Keep original meaning and avoid adding facts.\n\n"
+                    f"User note: {text}"
+                )
+                response = llm.invoke(prompt)
+                refined_text = (response.content or "").strip()
 
-            if not refined_text:
-                refined_text = text
+                if not refined_text:
+                    refined_text = text
 
-            save_note(refined_text)
-            await thinking_msg.edit(content="✅ Saved refined note to Notion")
-        except Exception as e:
-            await thinking_msg.edit(content=f"❌ Notion save failed: {str(e)}")
+                save_note(refined_text)
+                await thinking_msg.edit(content="✅ Saved AI-refined note to Notion")
+            except Exception as e:
+                await thinking_msg.edit(content=f"❌ Notion save failed: {str(e)}")
+        else:
+            try:
+                save_note(text)
+                await message.channel.send("✅ Saved raw note to Notion")
+            except Exception as e:
+                await message.channel.send(f"❌ Notion save failed: {str(e)}")
         return
 
     elif user_input.startswith("!note read"):
