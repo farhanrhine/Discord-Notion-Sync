@@ -49,11 +49,25 @@ async def on_message(message):
             await message.channel.send("❌ Please provide text to save.")
             return
 
+        thinking_msg = await message.channel.send("🤔 Processing note...")
+
         try:
-            save_note(text)
-            await message.channel.send("✅ Saved to Notion")
+            prompt = (
+                "Rewrite this as one concise plain-text note line. "
+                "Do not use bullets, numbering, markdown, or line breaks. "
+                "Keep original meaning and avoid adding facts.\n\n"
+                f"User note: {text}"
+            )
+            response = llm.invoke(prompt)
+            refined_text = (response.content or "").strip()
+
+            if not refined_text:
+                refined_text = text
+
+            save_note(refined_text)
+            await thinking_msg.edit(content="✅ Saved refined note to Notion")
         except Exception as e:
-            await message.channel.send(f"❌ Notion save failed: {str(e)}")
+            await thinking_msg.edit(content=f"❌ Notion save failed: {str(e)}")
         return
 
     elif user_input.startswith("!note read"):

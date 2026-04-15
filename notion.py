@@ -1,4 +1,5 @@
 import os
+import re
 from notion_client import Client
 from dotenv import load_dotenv
 
@@ -18,6 +19,12 @@ def _get_notion_client_and_page_id():
 
 
 def save_note(text):
+    # Normalize model/user text so each Notion bullet is clean and single-line.
+    cleaned_text = " ".join((text or "").split())
+    cleaned_text = re.sub(r"^[-*•\s]+", "", cleaned_text)
+    if not cleaned_text:
+        raise ValueError("Note text is empty after cleanup.")
+
     notion, notion_page_id = _get_notion_client_and_page_id()
     notion.blocks.children.append(
         block_id=notion_page_id,
@@ -30,7 +37,7 @@ def save_note(text):
                         {
                             "type": "text",
                             "text": {
-                                "content": text,
+                                "content": cleaned_text,
                             },
                         }
                     ]
