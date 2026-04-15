@@ -9,6 +9,7 @@ dependencies = [
     "groq<1",
     "langchain>=1.2.15",
     "langchain-groq>=1.1.2",
+    "langchain-tavily>=0.2.17",
     "notion-client>=3.0.0",
     "python-dotenv>=1.2.2",
 ]
