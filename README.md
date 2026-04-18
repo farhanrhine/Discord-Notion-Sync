@@ -31,14 +31,14 @@ flowchart TD
     Bot -->|!note save| NotionNode[notion.py \n Raw Save / Read]:::notion
     Bot -->|!note save ai| LLMCore[LLM Engine]:::LLM
     Bot -->|!note read| NotionNode
-    Bot -->|!search| AgentNode[tavily_tool.py \n Web Search]:::agent
+    Bot -->|!search| AgentNode[tavily_tool.py \n Web Agent]:::agent
     Bot -->|!<anything else>| LLMCore
 
     %% Data Flow & External Connections
     LLMCore -->|Passes Refined Note| NotionNode
     NotionNode <-->|API| NotionDB[(Notion Database)]:::notion
-    AgentNode <-->|Queries| Tavily[Tavily Search API]:::tavily
-    AgentNode <-->|Reasons| LLMCore
+    AgentNode -->|Wraps & Prompts| LLMCore
+    LLMCore <-->|Tool Execution| Tavily[Tavily Search API]:::tavily
 
     %% Bot Replies to User
     NotionNode -.->|Confirmation / Notes| Discord
