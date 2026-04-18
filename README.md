@@ -29,16 +29,21 @@ flowchart TD
 
     %% Command Routing Logic
     Bot -->|!note save| NotionNode[notion.py \n Raw Save / Read]:::notion
-    Bot -->|!note save ai| LLM[LLM \n Refine Text]:::LLM
+    Bot -->|!note save ai| LLMCore[LLM Engine]:::LLM
     Bot -->|!note read| NotionNode
     Bot -->|!search| AgentNode[tavily_tool.py \n Web Search]:::agent
-    Bot -->|!<anything else>| LLM[LLM \n Chat]:::LLM
+    Bot -->|!<anything else>| LLMCore
 
     %% Data Flow & External Connections
-    LLM -->|Passes Refined Note| NotionNode
+    LLMCore -->|Passes Refined Note| NotionNode
     NotionNode <-->|API| NotionDB[(Notion Database)]:::notion
     AgentNode <-->|Queries| Tavily[Tavily Search API]:::tavily
-    AgentNode <-->|Reasons| LLM
+    AgentNode <-->|Reasons| LLMCore
+
+    %% Bot Replies to User
+    NotionNode -.->|Confirmation / Notes| Discord
+    AgentNode -.->|Search Results| Discord
+    LLMCore -.->|Chat Response| Discord
 ```
 
 ## 📁 Project Structure
