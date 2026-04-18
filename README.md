@@ -28,11 +28,11 @@ flowchart TD
     Discord -->|Events/Commands| Bot{bot.py Router}:::bot
 
     %% Command Routing Logic
-    Bot -->|!note save| NotionNode[notion.py \n Raw Save / Read]:::notion
-    Bot -->|!note save ai| LLMCore[LLM Engine]:::LLM
-    Bot -->|!note read| NotionNode
-    Bot -->|!search| AgentNode[tavily_tool.py \n Web Agent]:::agent
-    Bot -->|!(general query)| LLMCore
+    Bot -->|"!note save"| NotionNode[notion.py \n Raw Save / Read]:::notion
+    Bot -->|"!note save ai"| LLMCore[LLM Engine]:::LLM
+    Bot -->|"!note read"| NotionNode
+    Bot -->|"!search"| AgentNode[tavily_tool.py \n Web Agent]:::agent
+    Bot -->|"!(general query)"| LLMCore
 
     %% Data Flow & External Connections
     LLMCore -->|Passes Refined Note| NotionNode
