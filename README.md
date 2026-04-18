@@ -32,7 +32,7 @@ flowchart TD
     Bot -->|!note save ai| LLMCore[LLM Engine]:::LLM
     Bot -->|!note read| NotionNode
     Bot -->|!search| AgentNode[tavily_tool.py \n Web Agent]:::agent
-    Bot -->|!<anything else>| LLMCore
+    Bot -->|!(general query)| LLMCore
 
     %% Data Flow & External Connections
     LLMCore -->|Passes Refined Note| NotionNode
