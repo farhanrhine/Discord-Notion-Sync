@@ -90,3 +90,18 @@ Before you begin, ensure you have:
 - `!note read`: Fetch recent notes from Notion.
 - `!search <query>`: Ask the web agent to research something.
 - `!<anything else>`: Acts as a general chat with the LLM (e.g., `!hello`).
+
+## ☁️ Running 24/7 (Deployment)
+
+Since the bot is lightweight and driven entirely by APIs (Groq, Notion, Tavily) rather than heavy local ML models, cloud hosting platforms like **Railway** or **Render** are the easiest options.
+
+To deploy the bot so you can chat with it anytime without leaving your terminal open:
+
+1. Generate a `requirements.txt` from your `uv` setup:
+   ```bash
+   uv pip compile pyproject.toml -o requirements.txt
+   ```
+2. Push your code to a **GitHub repository**.
+3. Connect your GitHub repo to a service like **[Railway.app](https://railway.app/)** or **[Render.com](https://render.com/)**.
+4. Input your `.env` variables into the platform's Environment Variables dashboard.
+5. Click **Deploy**. The platform will detect your Python code and keep the script running in the background permanently.
