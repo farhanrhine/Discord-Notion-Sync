@@ -22,20 +22,23 @@ flowchart TD
     classDef agent fill:#66BB6A,stroke:#388E3C,stroke-width:2px,color:#fff;
     classDef notion fill:#ECEFF1,stroke:#CFD8DC,stroke-width:2px,color:#000;
     classDef tavily fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff;
-    classDef groq fill:#EF5350,stroke:#C62828,stroke-width:2px,color:#fff;
+    classDef LLM fill:#EF5350,stroke:#C62828,stroke-width:2px,color:#fff;
 
     User([User]):::user -->|Message| Discord[Discord Channel]:::discord
-    Discord -->|Events| Bot{bot.py Router}:::bot
+    Discord -->|Events/Commands| Bot{bot.py Router}:::bot
 
-    %% Routing Logic
-    Bot -->|!note| NotionNode[notion.py]:::notion
-    Bot -->|!search| AgentNode[tavily_tool.py]:::agent
-    Bot -->|!ask| GroqNode[Groq LLM]:::groq
+    %% Command Routing Logic
+    Bot -->|!note save| NotionNode[notion.py \n Raw Save / Read]:::notion
+    Bot -->|!note save ai| LLM[LLM \n Refine Text]:::LLM
+    Bot -->|!note read| NotionNode
+    Bot -->|!search| AgentNode[tavily_tool.py \n Web Search]:::agent
+    Bot -->|!<anything else>| LLM[LLM \n Chat]:::LLM
 
-    %% Data Flow
+    %% Data Flow & External Connections
+    LLM -->|Passes Refined Note| NotionNode
     NotionNode <-->|API| NotionDB[(Notion Database)]:::notion
-    AgentNode <-->|Queries| Tavily[Tavily Search]:::tavily
-    AgentNode <-->|Reasons| GroqNode
+    AgentNode <-->|Queries| Tavily[Tavily Search API]:::tavily
+    AgentNode <-->|Reasons| LLM
 ```
 
 ## 📁 Project Structure
@@ -81,4 +84,4 @@ Before you begin, ensure you have:
 - `!note save ai <text>`: Refine text with AI and save it.
 - `!note read`: Fetch recent notes from Notion.
 - `!search <query>`: Ask the web agent to research something.
-- `!<anything else>`: Acts as a general chat with the Groq LLM (e.g., `!hello`).
+- `!<anything else>`: Acts as a general chat with the LLM (e.g., `!hello`).
